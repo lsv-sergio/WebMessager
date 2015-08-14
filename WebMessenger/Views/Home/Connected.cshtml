@@ -1,0 +1,60 @@
+﻿@model UserModel
+@using WebMessenger.Models;
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+<script src="~/signalr/hubs"></script>
+<script src="~/Scripts/angular.min.js"></script>
+<script>
+    @*var AllMessages = function () { return @Html.Raw(Json.Encode(@Model.MessagesJson)); }();
+    var AllUsers = function () { return @Html.Raw(Json.Encode(@Model.UsersJson)); }();*@
+    var UserName = "@Model.Name";
+    var UserId = @Model.Id;
+</script>
+<script src="~/Scripts/application/Application.js"></script>
+<script src="~/Scripts/application/Controllers/WebMessagerController.js"></script>
+
+<div class="container" ng-app="WebMessagerApp">
+
+    <div id="MessagerRoom" ng-controller="WebMessagerController">
+
+        <div class="form-group col-md-4" id="Users">
+            <div class ="form-group col-md-12">
+                <span class="control-label">Вы вошли под именем - </span>
+                <span class="control-label" ng-bind="userName"></span>
+                <div class="btn btn-default" ng-click="disconnect()">
+                    <span>Выйти</span> <i class="glyphicon glyphicon-log-out"></i>
+                </div>
+            </div>
+
+            <ul class="nav nav-pills nav-stacked" style="height:400px;">
+                <li ng-repeat="usr in usersList" class="form-group" ng-click="selectReciver($index)">
+                    <div class="btn col-md-12" ng-class="getClass($index)">{{usr.Name}}</div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="form-group col-md-8" id="MessagesBox">
+            <div class="table" style=" height:400px;overflow-y:scroll;">
+                <div ng-repeat="message in currentMessages">{{'[' + message.SendDate + '] - ' + message.SenderName + ' - ' + message.Message }}</div>
+            </div>
+            <div class="form-group">
+                <input type="text" ng-model="newMessage" class="form-control" placeholder="Введите сообщение" />
+                <div ng-click="sendMessage()" class="btn btn-default">Отправить</div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    angular.element(document).on("ready", function () {
+        angular.element(jQuery("#MessagerRoom")).scope().connect();
+    }
+    );
+    angular.element(document).on("unload", function () {
+        angular.element(jQuery("#MessagerRoom")).scope().disconnect();
+    });
+    
+</script>
