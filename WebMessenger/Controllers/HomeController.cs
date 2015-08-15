@@ -20,9 +20,10 @@ namespace WebMessenger.Controllers
             _usersService = UserService.GetInstance();
             ViewBag.IsDebugMode = false;
 
-#if DEBUG
-            ViewBag.IsDebugMode = true;
-#endif
+//#if DEBUG
+//            ViewBag.IsDebugMode = true;
+//#endif
+
         }
 
         [HttpGet]
@@ -53,9 +54,6 @@ namespace WebMessenger.Controllers
             { 
                 Id = user.Id, 
                 Name = user.Name
-                //,
-                //UsersJson = JsonConvert.SerializeObject(GetAllConnectedUsers()),
-                //MessagesJson = JsonConvert.SerializeObject(_messageService.GetMessagesByUser(user.Id))
             };
             return View("Connected", model);
         }

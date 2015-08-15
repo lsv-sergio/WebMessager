@@ -8,6 +8,6 @@ namespace WebMessenger.Models
         public string SenderName { get; set; }
         public string ReceiverName { get; set; }
         public string Message { get; set; }
-        public DateTime SendDate { get; set; }
+        public string SendDate { get; set; }
     }
 }

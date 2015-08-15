@@ -25,7 +25,7 @@ namespace WebMessenger.Hubs
             UserDomain reciver = _userService.GetUserById(ReciverId);
             if (sender == null || reciver == null)
                 return;
-            string messageJson = JsonConvert.SerializeObject(new { Message = Message, SenderName = sender.Name, SendDate = DateTime.Now.ToShortTimeString() });
+            string messageJson = JsonConvert.SerializeObject(new { Message = Message, SenderName = sender.Name, SendDate = DateTime.Now.ToString("HH:mm:ss dd/MM/yyyy") });
 
             if (reciver.Id == 0)
                 Clients.All.IncommingMessage(0, messageJson);

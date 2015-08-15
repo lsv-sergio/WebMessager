@@ -19,7 +19,6 @@ namespace WebMessenger.Controllers
         }
  
         [HttpPost]
-        [Route("api/values/login")]
         public HtmlResult Login(LoginModel LoginModel)
         {
             var viewData = new System.Web.Mvc.ViewDataDictionary();
@@ -50,6 +49,8 @@ namespace WebMessenger.Controllers
                 Id = user.Id,
                 Name = user.Name
             };
+            viewData.Model = model;
+
             return new HtmlResult("Connected", viewData);
         }
         

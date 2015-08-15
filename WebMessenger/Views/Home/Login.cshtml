@@ -16,7 +16,7 @@
         <div class=" form-group">
             @Html.LabelFor(model => model.LoginPassword, htmlAttributes: new { @class = " col-md-2 control-label" })
             <div class=" col-md-10  col-sm-6 col-xs-12">
-                @Html.TextBoxFor(model => model.LoginPassword, new { @class = "form-control", placeholder = "Введите пароль" })
+                @Html.TextBoxFor(model => model.LoginPassword, new { @class = "form-control", placeholder = "Введите пароль", type="password"})
             </div>
         </div>
         <div class="form-group">
@@ -34,7 +34,7 @@
             </div>
         </div>
     </div>
-    if (ViewBag.IsDebugMode != null && ViewBag.IsDebugMode)
+    if (ViewBag.IsDebugMode == null || !ViewBag.IsDebugMode)
     {
         <script>
             $(document).ready(
@@ -44,7 +44,7 @@
                             var login = $("#LoginName").val();
                             var password = $("#LoginPassword").val();
                             $.ajax({
-                                url: 'api/values/login',
+                                url: '@Url.HttpRouteUrl("ActionRoutes", new { controller = "values", action = "login"})',
                                 type: 'POST',
                                 data: 'LoginName=' + login + '&&LoginPassword=' + password,
                                 datatype: 'html',

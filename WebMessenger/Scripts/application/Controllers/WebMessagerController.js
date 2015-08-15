@@ -14,6 +14,10 @@
 
         webMessagerHub = $.connection.webMessagerHub;
 
+        isMessageValid = function () {
+            return $scope.userId !== 0 && $scope.selectedReciverId >= 0 && $scope.newMessage.length > 0;
+        }
+
         $scope.connect = function () {
             $.connection.hub.start().done(function () {
                 webMessagerHub.server.connect($scope.userId);
@@ -27,8 +31,10 @@
         }
 
         $scope.sendMessage = function () {
-            webMessagerHub.server.sendMessage($scope.userId,$scope.selectedReciverId, $scope.newMessage);
-            $scope.newMessage = "";
+            if (isMessageValid) {
+                webMessagerHub.server.sendMessage($scope.userId, $scope.selectedReciverId, $scope.newMessage);
+                $scope.newMessage = "";
+            }
         }
 
         $scope.getClass = function (index) {
@@ -41,6 +47,8 @@
         getUsersHistory = function (reciverId) {
 
             var historyIndex = -1;
+            if (reciverId < 0)
+                return historyIndex;
             for (i = 0; i < $scope.messagesList.length; i++) {
                 if ($scope.messagesList[i].UserId === reciverId) {
                     historyIndex = i;
@@ -50,8 +58,7 @@
             return historyIndex;
         }
 
-        addHistoryMessage = function (senderId, message)
-        {
+        addHistoryMessage = function (senderId, message) {
             var historyIndex = getUsersHistory(senderId);
             if (historyIndex === -1) {
                 userHistory = { UserId: senderId, Messages: [] };
@@ -64,7 +71,7 @@
                 }
         }
 
-        setCurrentMessages = function () {
+        saveCurrentMessages = function () {
 
             var historyIndex = getUsersHistory($scope.selectedReciverId);
             if (historyIndex === -1)
@@ -78,7 +85,29 @@
             }
         }
 
+        function setDivClass(newReciverId, oldReciverId) {
+
+            if (oldReciverId >= 0) {
+                var oldElement = $("div [data-id=" + oldReciverId + "]").first();
+                if (oldElement !== undefined) {
+                    $(oldElement).removeClass('btn-primary');
+                    $(oldElement).addClass('btn-default');
+                }
+            }
+            if (newReciverId >= 0) {
+                var newElement = $("div [data-id=" + newReciverId + "]").first();
+                if (newElement !== undefined) {
+                    $(newElement).removeClass('btn-danger');
+                    $(newElement).removeClass('btn-default');
+                    $(newElement).addClass('btn-primary');
+                }
+            }
+        }
+
         $scope.selectReciver = function (index) {
+
+            if (index === $scope.selectedReciverIndex)
+                return;
 
             var newUser = $scope.usersList[index];
             var newUserId = 0;
@@ -96,6 +125,8 @@
                     $scope.messagesList[historyIndex].Messages = $scope.currentMessages;
                 }
 
+            setDivClass(newUserId, $scope.selectedReciverId);
+
             $scope.selectedReciverId = newUserId;
 
             if (index === $scope.selectedReciverIndex)
@@ -103,10 +134,16 @@
             else
                 $scope.selectedReciverIndex = index;
 
-            setCurrentMessages();
+            saveCurrentMessages();
         }
 
         SetupSignalR();
+
+        notifyIncommingMessage = function (SenderId) {
+            var element = $("div [data-id=" + SenderId + "]").first();
+            if(element !== undefined)
+            $(element).addClass('btn-danger');
+        }
 
         function SetupSignalR() {
 
@@ -115,8 +152,10 @@
                 var newMessage = angular.fromJson(Message);
                 if ($scope.selectedReciverId === SenderId)
                     $scope.currentMessages.push(newMessage);
-                else
+                else {
                     addHistoryMessage(SenderId, newMessage);
+                    notifyIncommingMessage(SenderId);
+                }
                 $scope.$apply();
             }
 
@@ -140,11 +179,10 @@
                 $scope.userName = userName;
                 $scope.usersList = angular.fromJson(usersJson);
                 $scope.messagesList = angular.fromJson(messagesList);
-                $scope.selectReciver(0);
+                saveCurrentMessages();
                 $scope.$apply();
-
+                setDivClass(0, -1);
             };
 
         }
-
     })

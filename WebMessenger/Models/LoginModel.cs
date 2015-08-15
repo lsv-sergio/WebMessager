@@ -8,12 +8,12 @@ namespace WebMessenger.Models
 {
     public class LoginModel
     {
-        [Display(Name="Введите логин")]
+        [Display(Name="Логин")]
         [Required]
         [StringLength(25,MinimumLength=3, ErrorMessage = "Логин должен быть больше 3 символов")]
         public string LoginName { get; set; }
 
-        [Display(Name = "Введите пароль")]
+        [Display(Name = "Пароль")]
         [Required]
         [DataType(DataType.Password)]
         public string LoginPassword { get; set; }

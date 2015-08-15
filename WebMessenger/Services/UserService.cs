@@ -12,7 +12,7 @@ namespace WebMessenger.Services
     {
         private static UserService _singleTone;
         private IList<UserDomain> _allUsers;
-
+        private static object locker = new object();
         private UserService()
         {
             _allUsers = new List<UserDomain>();
@@ -20,8 +20,13 @@ namespace WebMessenger.Services
 
         public static IUserService GetInstance()
         {
-            if (_singleTone == null)
-                _singleTone = new UserService();
+
+            lock (locker)
+            {
+                if (_singleTone == null)
+                    _singleTone = new UserService();
+
+            }
             return _singleTone;
         }
 
@@ -60,9 +65,13 @@ namespace WebMessenger.Services
 
         public void UpdateUser(UserDomain user)
         {
-            if (_allUsers.Contains(user))
-                _allUsers.Remove(user);
-            _allUsers.Add(user);
+            lock (locker)
+            {
+                if (_allUsers.Contains(user))
+                    _allUsers.Remove(user);
+                _allUsers.Add(user);
+                
+            }
         }
 
         private UserDomain GetUserByFilter(Func<UserDomain, bool> Filter)
